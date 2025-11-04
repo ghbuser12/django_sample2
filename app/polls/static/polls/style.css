@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 li a {
     color: green;
 }
