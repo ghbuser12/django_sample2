@@ -3,21 +3,24 @@ FROM python:3.13
 # 作業ディレクトリ
 WORKDIR /code
 
-# 依存関係ファイルをコピー
+# Node.js, curl, MariaDB Client, Java, Graphviz, PlantUML
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl mariadb-client openjdk-21-jre graphviz wget && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    npm install -g npm@latest && \
+    wget https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar -O /usr/local/bin/plantuml.jar && \
+    chmod +x /usr/local/bin/plantuml.jar && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Python 依存関係ファイルをコピー
 COPY requirements.txt /code/
 
-# Node.js と npm をインストール（Tailwind 用）
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
-
-# Tailwind CSS と Alpine.js をインストール
-RUN npm install -D tailwindcss @tailwindcss/cli postcss autoprefixer && npm install alpinejs
-
-# Python依存関係をインストール
+# Python 依存関係インストール
 RUN pip install --no-cache-dir -r requirements.txt
 
-# プロジェクトをコピー（Tailwindをビルドするために必要なファイルも含む）
-COPY . .
+ENV PLANTUML_JAR=/usr/local/bin/plantuml.jar
 
-# Tailwind CSS をビルド（CLIのパスを明示）
-RUN npx @tailwindcss/cli -i app/static/style.css -o app/static/output.css
+# プロジェクトをコピー
+COPY /app/ /code/
