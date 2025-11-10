@@ -1,7 +1,7 @@
 module.exports = {
-    content: ["./*.html"], // パスに注意。この場合はルート直下のhtmlを指定。
+    content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
     theme: {
         extend: {},
     },
-    plugins: [],
+    plugins: [require("daisyui")],
 }
